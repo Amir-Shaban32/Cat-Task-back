@@ -1,11 +1,38 @@
-import { Vehicle } from "./vehicle.js";
-import { Bicycle } from "./bicycle.js";
+const items = {
+    item1: {
+        id: 1,
+        amount: 3
+    },
+    item2: {
+        id: 4,
+        amount: 4
+    },
+    item3: {
+        id: 3,
+        amount: 5
+    },
+};
 
 
-let v = new Vehicle("green", 2)
-let c = new Bicycle();
 
-console.log(v.honkHorn());
-console.log(c.honkHorn());
-console.log(c.color);
-console.log(c.no_wheels);
+const getItems = async (id) => {
+    const response = fetch(`https://fakestoreapi.com/products/${id}`);
+
+    const data = (await response).json();
+
+    return data;
+};
+
+const calcPrice = async () => {
+    let tot_price = 0;
+
+    for (item in items) {
+        const { id, amount } = items[item];
+        const data = await getItems(id);
+        tot_price += data.price * amount;
+    }
+
+    console.log(tot_price);
+}
+
+calcPrice();
