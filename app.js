@@ -1,34 +1,23 @@
-const http = require('http');
-const url = require('url');
+import express from "express";
+import router from "./routes/authRoutes.js";
+import { connectDB } from "./models/db.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
 
+const app = express();
 
-const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
-  const pathName = parsedUrl.pathname;
-  const getQuery = parsedUrl.query;
+// Middlewares
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  origin: "http://localhost:5173", 
+  credentials: true
+}));
 
-  const a = parseFloat(getQuery.a);
-  const b = parseFloat(getQuery.b);
+// Routes
+app.use("/", router);
 
-  if (!isNaN(a) && !isNaN(b)) {
-    res.writeHead(200, 'cloud calculator');
-
-    if (pathName === '/add') {
-      res.end(JSON.stringify({ result: a + b }))
-    } else if (pathName === '/subtract') {
-      res.end(JSON.stringify({ result: a - b }))
-    } else if (pathName === '/multiply') {
-      res.end(JSON.stringify({ result: a * b }))
-    } else if (pathName === '/divide') {
-      res.end(JSON.stringify({ result: a / b }))
-    } else {
-      res.writeHead(400);
-      res.end("Invalid parameters");
-    }
-  } else {
-    res.writeHead(404);
-    res.end("Not found!");
-  }
+// DB connect + start server
+connectDB().then(() => {
+  app.listen(3000, () => console.log("Server running on port 3000 🚀"));
 });
-
-server.listen(3000, () => console.log("listining to port 3000"))
